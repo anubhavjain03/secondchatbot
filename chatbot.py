@@ -17,10 +17,9 @@ if "messages" not in st.session_state.keys():
     ]
 
 # Initialize the system message with default behavior
-if "system_message" not in st.session_state:
-    st.session_state.system_message = (
-        "You are a helpful nutrition assistant specialized in providing evidence-based dietary advice with a focus on Indian cuisine. Your goal is to help users make healthier choices by considering their cultural preferences, local ingredients, and scientific nutritional principles. Provide detailed but clear explanations and practical advice tailored to Indian meal patterns, festivals, and traditional cooking methods. Emphasize balanced nutrition, portion control, and sustainable habits. Avoid recommending extreme diets or unproven trends."
-    )
+st.session_state.system_message = st.session_state.get("system_message", 
+    "You are a helpful nutrition assistant specialized in providing evidence-based dietary advice with a focus on Indian cuisine. Your goal is to help users make healthier choices by considering their cultural preferences, local ingredients, and scientific nutritional principles. Provide detailed but clear explanations and practical advice tailored to Indian meal patterns, festivals, and traditional cooking methods. Emphasize balanced nutrition, portion control, and sustainable habits. Avoid recommending extreme diets or unproven trends."
+)
 
 # Initialize progress tracking metrics
 if "progress" not in st.session_state:
@@ -40,96 +39,112 @@ except Exception as e:
     st.error(f"Failed to initialize the conversation chain: {e}")
     st.stop()
 
-# User Interface setup
-st.title("Indian Cuisine AI Nutrition Coach")
-# Adding custom styles for title
-st.markdown("<style>.main-title {text-align: center; font-size: 2.5rem; font-family: 'Arial'; color: #2c3e50;}</style>", unsafe_allow_html=True)
-st.markdown('<h1 class="main-title">Your Personalized Nutrition Assistant</h1>', unsafe_allow_html=True)
+# Apple-inspired minimalistic UI setup
+st.markdown("""
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+        .main-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            color: #2c3e50;
+        }
+        .button {
+            background-color: #007aff;
+            border: none;
+            color: white;
+            text-align: center;
+            display: inline-block;
+            font-size: 14px;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #005fbc;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
-st.subheader("Created by Anubhav Jain, Entrepreneur, Author and Master Health Coach")
+st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
-# Onboarding message displayed only once
-if "onboarded" not in st.session_state:
-    st.session_state.onboarded = False
+# Main Title and Subtitle
+st.markdown('<div class="title">Indian Cuisine AI Nutrition Coach</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Your Personalized Nutrition Assistant</div>', unsafe_allow_html=True)
 
-if not st.session_state.onboarded:
-    st.info(
-        "Welcome to the Indian Cuisine AI Nutrition Coach! Here's how you can interact with me:\n"
-        "- Ask me questions about healthy eating based on Indian cuisine.\n"
-        "- Share your dietary preferences or restrictions for personalized advice.\n"
-        "- Explore balanced meal options, portion control tips, and more!\n"
-        "- Participate in daily challenges to improve your nutrition habits.\n"
-        "Type your question below to get started."
-    )
-    st.session_state.onboarded = True
+# Input for user prompt
+prompt = st.text_input("Ask me anything about nutrition:", placeholder="e.g., What are healthy breakfast options?")
 
-# Sidebar for progress tracking and customization
-st.sidebar.header("🌟 Your Progress 🌟")
-# Adding styles for sidebar titles
-st.sidebar.markdown("<style>.sidebar-title {font-family: 'Verdana'; color: #8e44ad;}</style>", unsafe_allow_html=True)
+# Quick suggestions
+st.markdown("<div style='margin-top: 20px;'>", unsafe_allow_html=True)
+st.markdown("<strong>Quick Suggestions:</strong>", unsafe_allow_html=True)
+suggestions = ["Healthy breakfast options", "How to reduce sugar in my diet", "Protein sources in Indian food", "How to balance meals"]
+for suggestion in suggestions:
+    if st.button(f"🔹 {suggestion}", key=suggestion):
+        st.session_state.messages.append({"role": "user", "content": suggestion})
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Display chat history
+st.markdown("<div style='margin-top: 20px;'>", unsafe_allow_html=True)
+st.markdown("<strong>Chat History:</strong>", unsafe_allow_html=True)
+for message in st.session_state.messages:
+    role_style = "color: #007aff;" if message["role"] == "user" else "color: #333;"
+    st.markdown(f"<div style='{role_style}'>{message['content']}</div>", unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Generate response for user input
+if prompt:
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    try:
+        system_message = st.session_state.system_message
+        context_prompt = f"System Message: {system_message}\n{prompt}"
+        response = conversation.predict(input=context_prompt)
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.markdown(f"<div style='color: #333;'>{response}</div>", unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Error generating response: {e}")
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Sidebar for customization
+st.sidebar.header("Settings")
+st.sidebar.markdown('<div class="sidebar">Customize your assistant's behavior and track your progress.</div>', unsafe_allow_html=True)
 st.sidebar.write(f"**Days Active:** {st.session_state.progress['days_active']}")
 st.sidebar.write(f"**Goals Achieved:** {st.session_state.progress['goals_achieved']}")
 st.sidebar.write(f"**Current Streak:** {st.session_state.progress['current_streak']}")
 
-# Button to mark daily challenge completion
-if st.button("✅ Complete Today's Challenge"):
-    st.session_state.progress["days_active"] += 1
-    st.session_state.progress["goals_achieved"] += 1
-    st.session_state.progress["current_streak"] += 1
-    st.success("Great job! You've completed today's challenge.")
-
 # Dropdown for system message templates
-with st.sidebar:
-    templates = [
-        "You are a helpful nutrition assistant specialized in Indian cuisine.",
-        "You are a friendly coach focused on sustainable and healthy eating habits.",
-        "You are an evidence-based guide helping users make informed dietary decisions."
-    ]
-    if st.session_state.system_message not in templates:
-        st.session_state.system_message = templates[0]
-    st.session_state.system_message = st.selectbox(
-        "🎨 Customize Bot Behavior 🎨",
-        templates,
-        index=templates.index(st.session_state.system_message),
-        help="Choose a predefined template to customize the bot's behavior."
-    )
-
-# Capture user input through a larger centered search bar
-st.markdown("<div style='display: flex; justify-content: center; margin: 20px;'>", unsafe_allow_html=True)
-prompt = st.text_input("Type your question here:", "", key="search_bar", placeholder="e.g., What are healthy breakfast options?", label_visibility="visible")
-st.markdown("</div>", unsafe_allow_html=True)
-
-# Quick suggestion buttons placed below the search bar
-st.markdown("<div style='text-align: center; margin-top: 20px;'>", unsafe_allow_html=True)
-st.markdown("### 🍴 Quick Suggestions 🍴")
-suggestions = ["What are healthy breakfast options?", "How can I reduce sugar in my diet?", "What are good protein sources in Indian food?", "How can I balance my meals?"]
-for suggestion in suggestions:
-    if st.button(f"🔹 {suggestion}") and all(msg["content"] != suggestion for msg in st.session_state.messages):
-        st.session_state.messages.append({"role": "user", "content": suggestion})
-st.markdown("</div>", unsafe_allow_html=True)
-
-# Display previous chat messages
-st.markdown("<div style='background-color: #f7f9fc; padding: 10px; border-radius: 5px;'>", unsafe_allow_html=True)
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
-st.markdown("</div>", unsafe_allow_html=True)
-
-# Generate a response if the last message is not from the assistant
-if prompt:
-    st.session_state.messages.append({"role": "user", "content": prompt})
-if st.session_state.messages[-1]["role"] != "assistant":
-    with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
-            # Validate session state before constructing the prompt
-            system_message = st.session_state.system_message if isinstance(st.session_state.system_message, str) else "Default system message."
-            last_user_message = st.session_state.messages[-1]['content'] if 'content' in st.session_state.messages[-1] else "No user input provided."
-            context_prompt = f"System Message: {system_message}\n{last_user_message}"
-            try:
-                response = conversation.predict(input=context_prompt)
-                st.write(response)
-                st.markdown(":star2: Great insight! Keep exploring healthy choices! :star2:")  # Add visual feedback
-                message = {"role": "assistant", "content": response}
-                st.session_state.messages.append(message)  # Add response to message history
-            except Exception as e:
-                st.error(f"Error generating response: {e}")
+templates = [
+    "You are a helpful nutrition assistant specialized in Indian cuisine.",
+    "You are a friendly coach focused on sustainable and healthy eating habits.",
+    "You are an evidence-based guide helping users make informed dietary decisions."
+]
+st.session_state.system_message = st.sidebar.selectbox(
+    "Assistant Behavior:",
+    templates,
+    index=templates.index(st.session_state.system_message) if st.session_state.system_message in templates else 0,
+    help="Select how the assistant should respond."
+)
