@@ -41,7 +41,10 @@ except Exception as e:
     st.stop()
 
 # User Interface setup
-st.title("Indian Cuisine AI Nutrition Coach")
+st.title("✨ Indian Cuisine AI Nutrition Coach ✨")
+st.markdown("<style>.main-title {text-align: center; font-size: 2.5rem; font-family: 'Arial'; color: #2c3e50;}</style>", unsafe_allow_html=True)
+st.markdown('<h1 class="main-title">Your Personalized Nutrition Assistant</h1>', unsafe_allow_html=True)
+
 st.subheader("Created by Anubhav Jain, Entrepreneur, Author and Master Health Coach")
 
 # Onboarding message displayed only once
@@ -60,13 +63,14 @@ if not st.session_state.onboarded:
     st.session_state.onboarded = True
 
 # Sidebar for progress tracking and customization
-st.sidebar.header("Your Progress")
-st.sidebar.write(f"Days Active: {st.session_state.progress['days_active']}")
-st.sidebar.write(f"Goals Achieved: {st.session_state.progress['goals_achieved']}")
-st.sidebar.write(f"Current Streak: {st.session_state.progress['current_streak']}")
+st.sidebar.header("🌟 Your Progress 🌟")
+st.sidebar.markdown("<style>.sidebar-title {font-family: 'Verdana'; color: #8e44ad;}</style>", unsafe_allow_html=True)
+st.sidebar.write(f"**Days Active:** {st.session_state.progress['days_active']}")
+st.sidebar.write(f"**Goals Achieved:** {st.session_state.progress['goals_achieved']}")
+st.sidebar.write(f"**Current Streak:** {st.session_state.progress['current_streak']}")
 
 # Button to mark daily challenge completion
-if st.button("Complete Today's Challenge"):
+if st.button("✅ Complete Today's Challenge"):
     st.session_state.progress["days_active"] += 1
     st.session_state.progress["goals_achieved"] += 1
     st.session_state.progress["current_streak"] += 1
@@ -82,17 +86,18 @@ with st.sidebar:
     if st.session_state.system_message not in templates:
         st.session_state.system_message = templates[0]
     st.session_state.system_message = st.selectbox(
-        "System Message Templates",
+        "🎨 Customize Bot Behavior 🎨",
         templates,
         index=templates.index(st.session_state.system_message),
         help="Choose a predefined template to customize the bot's behavior."
     )
 
 # Quick suggestion buttons for user convenience
-st.markdown("### Quick Suggestions")
+st.markdown("### 🍴 Quick Suggestions 🍴")
+st.markdown("<style>.quick-buttons {text-align: center;}</style>", unsafe_allow_html=True)
 suggestions = ["What are healthy breakfast options?", "How can I reduce sugar in my diet?", "What are good protein sources in Indian food?", "How can I balance my meals?"]
 for suggestion in suggestions:
-    if st.button(suggestion):
+    if st.button(f"🔹 {suggestion}"):
         st.session_state.messages.append({"role": "user", "content": suggestion})
 
 # Capture user input through chat
@@ -100,9 +105,11 @@ if prompt := st.chat_input("Your question"):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
 # Display previous chat messages
+st.markdown("<div style='background-color: #f7f9fc; padding: 10px; border-radius: 5px;'>", unsafe_allow_html=True)
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
+st.markdown("</div>", unsafe_allow_html=True)
 
 # Generate a response if the last message is not from the assistant
 if st.session_state.messages[-1]["role"] != "assistant":
