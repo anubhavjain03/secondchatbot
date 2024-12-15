@@ -41,9 +41,9 @@ except Exception as e:
     st.stop()
 
 # User Interface setup
-st.title("✨ Indian Cuisine AI Nutrition Coach ✨")
+st.title("✨ Indian Cuisine AI Nutrition Coach")
 st.markdown("<style>.main-title {text-align: center; font-size: 2.5rem; font-family: 'Arial'; color: #2c3e50;}</style>", unsafe_allow_html=True)
-st.markdown('<h1 class="main-title">Your Personalized Nutrition Assistant</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-title">Your Personalized Nutrition Assistant</h2>', unsafe_allow_html=True)
 
 st.subheader("Created by Anubhav Jain, Entrepreneur, Author and Master Health Coach")
 
