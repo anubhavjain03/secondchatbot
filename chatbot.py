@@ -42,8 +42,9 @@ except Exception as e:
 
 # User Interface setup
 st.title("Indian Cuisine AI Nutrition Coach")
+# Adding custom styles for title
 st.markdown("<style>.main-title {text-align: left; font-size: 2.5rem; font-family: 'Arial'; color: #2c3e50;}</style>", unsafe_allow_html=True)
-st.markdown('<h1 class="main-title">Your Personalized Nutrition Assistant</h2>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-title">Your Personalized Nutrition Assistant</h1>', unsafe_allow_html=True)
 
 st.subheader("Created by Anubhav Jain, Entrepreneur, Author and Master Health Coach")
 
@@ -64,6 +65,7 @@ if not st.session_state.onboarded:
 
 # Sidebar for progress tracking and customization
 st.sidebar.header("🌟 Your Progress 🌟")
+# Adding styles for sidebar titles
 st.sidebar.markdown("<style>.sidebar-title {font-family: 'Verdana'; color: #8e44ad;}</style>", unsafe_allow_html=True)
 st.sidebar.write(f"**Days Active:** {st.session_state.progress['days_active']}")
 st.sidebar.write(f"**Goals Achieved:** {st.session_state.progress['goals_achieved']}")
@@ -92,17 +94,19 @@ with st.sidebar:
         help="Choose a predefined template to customize the bot's behavior."
     )
 
-# Quick suggestion buttons for user convenience
+# Capture user input through a larger centered search bar
+st.markdown("<div style='display: flex; justify-content: center; margin: 20px;'>", unsafe_allow_html=True)
+prompt = st.text_input("Type your question here:", "", key="search_bar", placeholder="e.g., What are healthy breakfast options?", label_visibility="visible")
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Quick suggestion buttons placed below the search bar
+st.markdown("<div style='text-align: center; margin-top: 20px;'>", unsafe_allow_html=True)
 st.markdown("### 🍴 Quick Suggestions 🍴")
-st.markdown("<style>.quick-buttons {text-align: center;}</style>", unsafe_allow_html=True)
 suggestions = ["What are healthy breakfast options?", "How can I reduce sugar in my diet?", "What are good protein sources in Indian food?", "How can I balance my meals?"]
 for suggestion in suggestions:
-    if st.button(f"🔹 {suggestion}"):
+    if st.button(f"🔹 {suggestion}") and all(msg["content"] != suggestion for msg in st.session_state.messages):
         st.session_state.messages.append({"role": "user", "content": suggestion})
-
-# Capture user input through chat
-if prompt := st.chat_input("Your question"):
-    st.session_state.messages.append({"role": "user", "content": prompt})
+st.markdown("</div>", unsafe_allow_html=True)
 
 # Display previous chat messages
 st.markdown("<div style='background-color: #f7f9fc; padding: 10px; border-radius: 5px;'>", unsafe_allow_html=True)
@@ -112,6 +116,8 @@ for message in st.session_state.messages:
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Generate a response if the last message is not from the assistant
+if prompt:
+    st.session_state.messages.append({"role": "user", "content": prompt})
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
@@ -119,8 +125,11 @@ if st.session_state.messages[-1]["role"] != "assistant":
             system_message = st.session_state.system_message if isinstance(st.session_state.system_message, str) else "Default system message."
             last_user_message = st.session_state.messages[-1]['content'] if 'content' in st.session_state.messages[-1] else "No user input provided."
             context_prompt = f"System Message: {system_message}\n{last_user_message}"
-            response = conversation.predict(input=context_prompt)
-            st.write(response)
-            st.markdown(":star2: Great insight! Keep exploring healthy choices! :star2:")  # Add visual feedback
-            message = {"role": "assistant", "content": response}
-            st.session_state.messages.append(message)  # Add response to message history
+            try:
+                response = conversation.predict(input=context_prompt)
+                st.write(response)
+                st.markdown(":star2: Great insight! Keep exploring healthy choices! :star2:")  # Add visual feedback
+                message = {"role": "assistant", "content": response}
+                st.session_state.messages.append(message)  # Add response to message history
+            except Exception as e:
+                st.error(f"Error generating response: {e}")
