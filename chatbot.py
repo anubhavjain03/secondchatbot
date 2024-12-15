@@ -8,7 +8,7 @@ import os
 
 # Initialize session state variables
 if 'buffer_memory' not in st.session_state:
-    st.session_state.buffer_memory = ConversationBufferWindowMemory(k=3, return_messages=True)
+    st.session_state.buffer_memory = ConversationBufferWindowMemory(k=4, return_messages=True)
 
 if "messages" not in st.session_state.keys(): # Initialize the chat message history
     st.session_state.messages = [
@@ -30,8 +30,8 @@ llm = ChatOpenAI(
 conversation = ConversationChain(memory=st.session_state.buffer_memory, llm=llm)
 
 # Create user interface
-st.title("🗣️ Conversational Chatbot")
-st.subheader("⑫ Simple Chat Interface for LLMs by Build Fast with AI")
+st.title("Indian Cuisine AI Nutrition Coach")
+st.subheader("Created by Anubhav Jain, Entrepreneur, Author and Master Health Coach")
 
 # Allow customization of system message
 with st.sidebar:
