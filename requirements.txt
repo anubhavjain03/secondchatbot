@@ -1,4 +1,4 @@
 langchain
-langchain-openai
+langchain_google_genai
 streamlit
 streamlit-chat
