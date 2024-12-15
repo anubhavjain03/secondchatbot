@@ -44,7 +44,7 @@ except Exception as e:
 st.title("Indian Cuisine AI Nutrition Coach")
 st.markdown("<style>.main-title {text-align: left; font-size: 1.5rem; font-family: 'Arial'; color: #2c3e50;}</style>", unsafe_allow_html=True)
 
-st.subheader("Created by Anubhav Jain, Entrepreneur, Author and Master Health Coach")
+st.subheader("Created by Anubhav Jain, Author and Master Health Coach")
 
 # Onboarding message displayed only once
 if "onboarded" not in st.session_state:
@@ -100,7 +100,7 @@ for suggestion in suggestions:
         st.session_state.messages.append({"role": "user", "content": suggestion})
 
 # Capture user input through chat
-if prompt := st.chat_input("Your question"):
+if prompt := st.chat_input("Type Your Question Here"):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
 # Display previous chat messages
