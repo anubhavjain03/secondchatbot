@@ -93,7 +93,7 @@ with st.sidebar:
 
 # Quick suggestion buttons for user convenience
 st.markdown("### 🍴 Quick Suggestions 🍴")
-st.markdown("<style>.quick-buttons {text-align: center;}</style>", unsafe_allow_html=True)
+st.markdown("<style>.quick-buttons {text-align: left;}</style>", unsafe_allow_html=True)
 suggestions = ["What are healthy breakfast options?", "How can I reduce sugar in my diet?", "What are good protein sources in Indian food?", "How can I balance my meals?"]
 for suggestion in suggestions:
     if st.button(f"🔹 {suggestion}"):
