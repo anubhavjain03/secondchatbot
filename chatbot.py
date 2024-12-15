@@ -3,8 +3,8 @@ from streamlit_chat import message
 from langchain_openai import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
-
 import os
+import time
 
 # Initialize session state variables for memory
 if 'buffer_memory' not in st.session_state:
@@ -121,9 +121,19 @@ if prompt:
     try:
         system_message = st.session_state.system_message
         context_prompt = f"System Message: {system_message}\n{prompt}"
-        response = conversation.predict(input=context_prompt)
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        st.markdown(f"<div style='color: #333;'>{response}</div>", unsafe_allow_html=True)
+        max_retries = 3
+        retry_delay = 2
+        for attempt in range(max_retries):
+            try:
+                response = conversation.predict(input=context_prompt)
+                st.session_state.messages.append({"role": "assistant", "content": response})
+                st.markdown(f"<div style='color: #333;'>{response}</div>", unsafe_allow_html=True)
+                break
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                else:
+                    raise e
     except Exception as e:
         st.error(f"Error generating response: {e}")
 
@@ -131,7 +141,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 # Sidebar for customization
 st.sidebar.header("Settings")
-st.sidebar.markdown('<div class="sidebar">Customize your assistant's behavior and track your progress.</div>', unsafe_allow_html=True)
+st.sidebar.markdown("<div class='sidebar'>Customize your assistant's behavior and track your progress.</div>", unsafe_allow_html=True)
 st.sidebar.write(f"**Days Active:** {st.session_state.progress['days_active']}")
 st.sidebar.write(f"**Goals Achieved:** {st.session_state.progress['goals_achieved']}")
 st.sidebar.write(f"**Current Streak:** {st.session_state.progress['current_streak']}")
