@@ -41,95 +41,58 @@ except Exception as e:
     st.stop()
 
 # User Interface setup
-st.title("Indian Cuisine AI Nutrition Coach")
-# Adding custom styles for title
-st.markdown("<style>.main-title {text-align: left; font-size: 2.5rem; font-family: 'Arial'; color: #2c3e50;}</style>", unsafe_allow_html=True)
-st.markdown('<h1 class="main-title">Your Personalized Nutrition Assistant</h1>', unsafe_allow_html=True)
+st.title("🗣️ Conversational Chatbot")
+st.subheader("A Simple Chat Interface for Nutrition Guidance")
 
-st.subheader("Created by Anubhav Jain, Entrepreneur, Author and Master Health Coach")
+# Sidebar for customization and progress tracking
+st.sidebar.header("Customize and Track Progress")
 
-# Onboarding message displayed only once
-if "onboarded" not in st.session_state:
-    st.session_state.onboarded = False
+# Dropdown for system message templates
+templates = [
+    "You are a helpful nutrition assistant specialized in Indian cuisine.",
+    "You are a friendly coach focused on sustainable and healthy eating habits.",
+    "You are an evidence-based guide helping users make informed dietary decisions."
+]
+if st.session_state.system_message not in templates:
+    st.session_state.system_message = templates[0]
+st.session_state.system_message = st.sidebar.selectbox(
+    "System Message Templates",
+    templates,
+    index=templates.index(st.session_state.system_message),
+    help="Choose a predefined template to customize the bot's behavior."
+)
 
-if not st.session_state.onboarded:
-    st.info(
-        "Welcome to the Indian Cuisine AI Nutrition Coach! Here's how you can interact with me:\n"
-        "- Ask me questions about healthy eating based on Indian cuisine.\n"
-        "- Share your dietary preferences or restrictions for personalized advice.\n"
-        "- Explore balanced meal options, portion control tips, and more!\n"
-        "- Participate in daily challenges to improve your nutrition habits.\n"
-        "Type your question below to get started."
-    )
-    st.session_state.onboarded = True
-
-# Sidebar for progress tracking and customization
-st.sidebar.header("🌟 Your Progress 🌟")
-# Adding styles for sidebar titles
-st.sidebar.markdown("<style>.sidebar-title {font-family: 'Verdana'; color: #8e44ad;}</style>", unsafe_allow_html=True)
+# Display progress tracking in the sidebar
 st.sidebar.write(f"**Days Active:** {st.session_state.progress['days_active']}")
 st.sidebar.write(f"**Goals Achieved:** {st.session_state.progress['goals_achieved']}")
 st.sidebar.write(f"**Current Streak:** {st.session_state.progress['current_streak']}")
 
 # Button to mark daily challenge completion
-if st.button("✅ Complete Today's Challenge"):
+if st.sidebar.button("Complete Today's Challenge"):
     st.session_state.progress["days_active"] += 1
     st.session_state.progress["goals_achieved"] += 1
     st.session_state.progress["current_streak"] += 1
-    st.success("Great job! You've completed today's challenge.")
+    st.sidebar.success("Great job! You've completed today's challenge.")
 
-# Dropdown for system message templates
-with st.sidebar:
-    templates = [
-        "You are a helpful nutrition assistant specialized in Indian cuisine.",
-        "You are a friendly coach focused on sustainable and healthy eating habits.",
-        "You are an evidence-based guide helping users make informed dietary decisions."
-    ]
-    if st.session_state.system_message not in templates:
-        st.session_state.system_message = templates[0]
-    st.session_state.system_message = st.selectbox(
-        "🎨 Customize Bot Behavior 🎨",
-        templates,
-        index=templates.index(st.session_state.system_message),
-        help="Choose a predefined template to customize the bot's behavior."
-    )
+# Input prompt for user
+prompt = st.text_input("Your question:", placeholder="Type your question here")
 
-# Capture user input through a larger centered search bar
-st.markdown("<div style='display: flex; justify-content: center; margin: 20px;'>", unsafe_allow_html=True)
-prompt = st.text_input("Type your question here:", "", key="search_bar", placeholder="e.g., What are healthy breakfast options?", label_visibility="visible")
-st.markdown("</div>", unsafe_allow_html=True)
-
-# Quick suggestion buttons placed below the search bar
-st.markdown("<div style='text-align: center; margin-top: 20px;'>", unsafe_allow_html=True)
-st.markdown("### 🍴 Quick Suggestions 🍴")
-suggestions = ["What are healthy breakfast options?", "How can I reduce sugar in my diet?", "What are good protein sources in Indian food?", "How can I balance my meals?"]
-for suggestion in suggestions:
-    if st.button(f"🔹 {suggestion}") and all(msg["content"] != suggestion for msg in st.session_state.messages):
-        st.session_state.messages.append({"role": "user", "content": suggestion})
-st.markdown("</div>", unsafe_allow_html=True)
-
-# Display previous chat messages
-st.markdown("<div style='background-color: #f7f9fc; padding: 10px; border-radius: 5px;'>", unsafe_allow_html=True)
+# Display prior chat messages
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
-st.markdown("</div>", unsafe_allow_html=True)
+    if message["role"] == "user":
+        st.write(f"🧑 {message['content']}")
+    else:
+        st.write(f"🤖 {message['content']}")
 
-# Generate a response if the last message is not from the assistant
+# Generate response if user input is provided
 if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
-if st.session_state.messages[-1]["role"] != "assistant":
-    with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
-            # Validate session state before constructing the prompt
-            system_message = st.session_state.system_message if isinstance(st.session_state.system_message, str) else "Default system message."
-            last_user_message = st.session_state.messages[-1]['content'] if 'content' in st.session_state.messages[-1] else "No user input provided."
-            context_prompt = f"System Message: {system_message}\n{last_user_message}"
-            try:
-                response = conversation.predict(input=context_prompt)
-                st.write(response)
-                st.markdown(":star2: Great insight! Keep exploring healthy choices! :star2:")  # Add visual feedback
-                message = {"role": "assistant", "content": response}
-                st.session_state.messages.append(message)  # Add response to message history
-            except Exception as e:
-                st.error(f"Error generating response: {e}")
+    with st.spinner("Thinking..."):
+        try:
+            system_message = st.session_state.system_message
+            context_prompt = f"System Message: {system_message}\n{prompt}"
+            response = conversation.predict(input=context_prompt)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+            st.write(f"🤖 {response}")
+        except Exception as e:
+            st.error(f"Error generating response: {e}")
