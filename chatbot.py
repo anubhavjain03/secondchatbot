@@ -31,8 +31,8 @@ llm = ChatOpenAI(model = "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
 conversation = ConversationChain(memory=st.session_state.buffer_memory, llm=llm)
 
 # Create user interface
-st.title("🗣️ Conversational Chatbot")
-st.subheader("㈻ Simple Chat Interface for LLMs by Build Fast with AI")
+st.title("NUTRITION Chatbot")
+st.subheader("Simple Chat Interface for LLMs by Anubhav Jain, Entrepreneur and Author")
 
 
 if prompt := st.chat_input("Your question"): # Prompt for user input and save to chat history
