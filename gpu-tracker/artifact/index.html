@@ -1,0 +1,652 @@
+<meta name="dash-one-writer">
+<style>
+  .gt { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+  .gt h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .gt h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .gt-sub { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); margin: 0; }
+  .gt-lede { font-size: var(--cds-font-size-body); line-height: 1.55; margin: 0; max-width: 72ch; }
+  .gt-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+  .gt-bar { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); align-items: end; }
+  .gt-field { display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+  .gt-field > span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .02em; }
+  .gt-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+  .gt-seg button { font: inherit; font-size: var(--cds-font-size-body); background: var(--color-bg); color: var(--color-fg); border: 0; padding: 6px 12px; cursor: pointer; }
+  .gt-seg button + button { border-left: 1px solid var(--color-border-line); }
+  .gt-seg button.gt-on { background: var(--color-fg); color: var(--color-bg); }
+  .gt-seg button:focus-visible, .gt-btn:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .gt-btn { font: inherit; font-size: var(--cds-font-size-caption); background: none; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+  .gt-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--cds-gap-md); }
+  .gt-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+  .gt-k { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .02em; }
+  .gt-v { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .gt-c { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); overflow-wrap: anywhere; }
+  .gt-good { color: var(--color-ok); } .gt-badc { color: var(--color-bad); }
+  .gt-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--cds-gap-lg); }
+  .gt-sec { display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+  .gt-chart { position: relative; min-height: 260px; width: 100%; }
+  .gt-chart svg { display: block; width: 100%; overflow: visible; }
+  .gt-chart text { fill: var(--cds-text-secondary); font-size: 11px; font-family: var(--font-anthropic-sans); }
+  .gt-chart .tick line { stroke: var(--cds-chart-grid); } .gt-chart .domain { stroke: var(--cds-chart-axis); }
+  .gt-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 6px 8px; font-size: var(--cds-font-size-caption); color: var(--color-fg); white-space: nowrap; z-index: 2; }
+  .gt-tip b { font-variant-numeric: tabular-nums; }
+  .gt-empty { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: var(--cds-pad-md) 0; }
+  .gt-tw { overflow-x: auto; max-height: 560px; overflow-y: auto; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
+  .gt-t { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .gt-t th { position: sticky; top: 0; background: var(--color-panel); text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: 8px 10px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .gt-t td { padding: 7px 10px; border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+  .gt-t td.gt-num, .gt-t th.gt-num { text-align: right; white-space: nowrap; }
+  .gt-t a { color: inherit; }
+  .gt-pill { display: inline-block; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--color-border-line); font-size: 11px; white-space: nowrap; }
+  .gt-pill.gt-high { color: var(--color-ok); border-color: currentColor; }
+  .gt-pill.gt-medium { color: var(--color-warn); border-color: currentColor; }
+  .gt-pill.gt-low, .gt-pill.gt-failed { color: var(--color-bad); border-color: currentColor; }
+  .gt-pill.gt-ok { color: var(--color-ok); border-color: currentColor; }
+  .gt-pill.gt-partial { color: var(--color-warn); border-color: currentColor; }
+  .gt-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; line-height: 1.5; max-width: 80ch; }
+  .gt-drivers { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: var(--cds-gap-xs); font-size: var(--cds-font-size-caption); line-height: 1.5; }
+  .gt details summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+  .gt details > div { display: flex; flex-direction: column; gap: var(--cds-gap-sm); padding-top: var(--cds-gap-sm); }
+  .gt-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .gt-sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+</style>
+
+<div class="gt" id="tracker">
+  <header class="gt-head" id="top">
+    <h1>Blackwell GPU Price Tracker</h1>
+    <p class="gt-lede" id="takeaway">The cheapest <span data-draw="t-what">—</span> offer right now is <b data-draw="t-cheap" data-source="summary" data-field="cheapest" data-row="0">—</b> per GPU-hour from <span data-draw="t-prov" data-source="summary" data-field="cheapest_provider" data-row="0">—</span>. Median across providers: <b data-draw="t-med" data-source="summary" data-field="median" data-row="0">—</b> (<span data-draw="t-n" data-source="summary" data-field="providers" data-row="0">—</span> listing it).</p>
+    <p class="gt-sub" data-draw="fresh">—</p>
+  </header>
+
+  <div class="gt-bar" id="filters" role="group" aria-label="Filters">
+    <div class="gt-field"><span>GPU</span>
+      <div class="gt-seg" id="gpu-pick">
+        <button type="button" data-gpu="B200" aria-pressed="true">B200</button>
+        <button type="button" data-gpu="B300" aria-pressed="false">B300</button>
+        <button type="button" data-gpu="RTX PRO 6000" aria-pressed="false">RTX PRO 6000</button>
+      </div>
+    </div>
+    <label class="gt-field"><span>Price type</span>
+      <select class="dash-select" id="pt-pick" aria-label="Price type">
+        <option value="on_demand">On-demand</option>
+        <option value="capacity_block">Capacity block</option>
+        <option value="private_estimate">Best private (estimated)</option>
+        <option value="reserved">Reserved (published)</option>
+        <option value="spot">Spot / interruptible</option>
+      </select>
+    </label>
+    <label class="gt-field"><span>Geography</span>
+      <select class="dash-select" id="geo-pick" data-draw="geo" aria-label="Geography" data-source="prices"></select>
+    </label>
+    <label class="gt-field"><span>Region</span>
+      <select class="dash-select" id="region-pick" data-draw="region" aria-label="Region" data-source="prices"></select>
+    </label>
+    <label class="gt-field"><span>Provider type</span>
+      <select class="dash-select" id="cat-pick" aria-label="Provider type">
+        <option value="">All provider types</option>
+        <option value="hyperscaler">Hyperscalers</option>
+        <option value="neocloud">Neoclouds</option>
+        <option value="marketplace">Marketplaces</option>
+        <option value="serverless">Serverless platforms</option>
+      </select>
+    </label>
+    <button type="button" class="gt-btn" id="reset">Reset filters</button>
+  </div>
+
+  <section class="gt-tiles" id="tiles" aria-label="Summary">
+    <div class="gt-card" id="tile-cheapest">
+      <span class="gt-k">Cheapest $/GPU-hr</span>
+      <span class="gt-v" data-draw="k-cheap" data-source="summary" data-field="cheapest" data-row="0">—</span>
+      <span class="gt-c" data-draw="k-cheap-who">—</span>
+    </div>
+    <div class="gt-card" id="tile-median">
+      <span class="gt-k">Median across providers</span>
+      <span class="gt-v" data-draw="k-med" data-source="summary" data-field="median" data-row="0">—</span>
+      <span class="gt-c">Each provider counted once, at its cheapest offer</span>
+    </div>
+    <div class="gt-card" id="tile-providers">
+      <span class="gt-k">Providers listing it</span>
+      <span class="gt-v" data-draw="k-n" data-source="summary" data-field="providers" data-row="0">—</span>
+      <span class="gt-c" data-draw="k-offers">—</span>
+    </div>
+    <div class="gt-card" id="tile-private">
+      <span class="gt-k">Best private rate (estimated)</span>
+      <span class="gt-v" data-draw="k-priv" data-source="summary" data-field="private_base" data-row="0">—</span>
+      <span class="gt-c" data-draw="k-priv-range">—</span>
+    </div>
+    <div class="gt-card" id="tile-change">
+      <span class="gt-k">Median vs 7 days ago</span>
+      <span class="gt-v" data-draw="k-chg" data-source="summary" data-field="change_7d" data-row="0">—</span>
+      <span class="gt-c" data-draw="k-chg30">—</span>
+    </div>
+  </section>
+
+  <div class="gt-grid2">
+    <section class="gt-sec" id="by-provider">
+      <h2>Cheapest offer by provider</h2>
+      <p class="gt-note">Lowest $/GPU-hr each provider lists for the filters above. Up to 20 providers.</p>
+      <div class="gt-chart" data-draw="bars" data-source="by_provider"></div>
+    </section>
+    <section class="gt-sec" id="forecast">
+      <h2>Projected median, next 12 months</h2>
+      <p class="gt-note" data-draw="fc-note">—</p>
+      <div class="gt-chart" data-draw="fan" data-source="forecast_sel"></div>
+      <div class="gt-legend"><span><i class="gt-sw" style="background: var(--cds-chart-muted)"></i>Low to high range</span><span><i class="gt-sw" data-draw="sw0"></i>Base case</span></div>
+    </section>
+  </div>
+
+  <section class="gt-sec" id="history">
+    <h2>Price history</h2>
+    <p class="gt-note">Daily minimum and median across providers for the filters above. One point is added each day.</p>
+    <div class="gt-chart" data-draw="hist" data-source="history_sel"></div>
+  </section>
+
+  <section class="gt-sec" id="offers">
+    <h2>All matching offers</h2>
+    <p class="gt-note" data-draw="offers-note">—</p>
+    <div class="gt-tw">
+      <table class="gt-t" data-source="selection" data-row-key="id" aria-label="Matching offers">
+        <thead><tr>
+          <th data-field="provider">Provider</th>
+          <th data-field="category">Type</th>
+          <th data-field="variant">GPU variant</th>
+          <th data-field="sku">Instance / SKU</th>
+          <th data-field="gpus" class="gt-num">GPUs</th>
+          <th data-field="price_gpu_hr" class="gt-num">$/GPU-hr</th>
+          <th data-field="price_instance_hr" class="gt-num">$/instance-hr</th>
+          <th data-field="term_months" class="gt-num">Term (mo)</th>
+          <th data-field="region">Region</th>
+          <th data-field="geo">Geography</th>
+          <th data-field="availability">Availability</th>
+          <th data-field="confidence">Confidence</th>
+          <th data-field="source">Source</th>
+        </tr></thead>
+        <tbody data-draw="offers"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="gt-sec" id="moves">
+    <h2>Biggest price moves</h2>
+    <p class="gt-note">Change in each provider's cheapest $/GPU-hr since the snapshot closest to 7 days ago.</p>
+    <div class="gt-tw">
+      <table class="gt-t" data-source="moves" data-row-key="provider" aria-label="Price moves">
+        <thead><tr>
+          <th data-field="provider">Provider</th>
+          <th data-field="before" class="gt-num">Before</th>
+          <th data-field="now" class="gt-num">Now</th>
+          <th data-field="change_pct" class="gt-num">Change</th>
+          <th data-field="since">Since</th>
+        </tr></thead>
+        <tbody data-draw="moves"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="gt-sec" id="private">
+    <h2>Best private pricing (estimated)</h2>
+    <p class="gt-note">Negotiated rates are not public. These ranges combine providers' published 6 to 60-month reserved rates, rental indices and reported commitment prices. Treat them as a starting point for negotiation, not a quote.</p>
+    <div class="gt-tw">
+      <table class="gt-t" data-source="private" data-row-key="id" aria-label="Private rate estimates">
+        <thead><tr>
+          <th data-field="geo">Geography</th>
+          <th data-field="low" class="gt-num">Low</th>
+          <th data-field="base" class="gt-num">Estimate</th>
+          <th data-field="high" class="gt-num">High</th>
+          <th data-field="n_reserved" class="gt-num">Providers with reserved rates</th>
+          <th data-field="confidence">Confidence</th>
+          <th data-field="method">Method</th>
+        </tr></thead>
+        <tbody data-draw="private"></tbody>
+      </table>
+    </div>
+    <h2 id="evidence-h">Evidence</h2>
+    <div class="gt-tw">
+      <table class="gt-t" data-source="evidence" data-row-key="id" aria-label="Pricing evidence">
+        <thead><tr>
+          <th data-field="date">Date</th>
+          <th data-field="kind">Kind</th>
+          <th data-field="value_gpu_hr" class="gt-num">$/GPU-hr</th>
+          <th data-field="claim">What it says</th>
+          <th data-field="source_name">Source</th>
+          <th data-field="confidence">Confidence</th>
+        </tr></thead>
+        <tbody data-draw="evidence"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="gt-sec" id="drivers">
+    <h2>What moves the forecast</h2>
+    <ul class="gt-drivers" data-draw="drivers" data-source="drivers"></ul>
+  </section>
+
+  <details id="method">
+    <summary>How this is collected and calculated</summary>
+    <div>
+      <p class="gt-note">A scheduled run collects public prices once a day: AWS price files and the Capacity Blocks page, the Azure Retail Prices API, Oracle's price list API, Vast.ai marketplace offers, the getdeploying.com comparison pages (dozens of neoclouds, marketplaces and serverless platforms), and Silicon Data's public index pages.</p>
+      <p class="gt-note">Prices are per GPU-hour in USD. Each row keeps the provider's cheapest SKU per region, term and size. Rows below a quarter of the median are dropped as fractional or mislabeled listings. Summary figures count each provider once, at its cheapest offer. GB200 and GB300 (Grace) systems are grouped under B200 and B300 and labeled in the variant column.</p>
+      <p class="gt-note">Forecast: each month the log price moves by an analog depreciation rate (the H100's path after launch) plus a momentum term from recent index moves, which halves every three months. Once 30 days of this tracker's own history exist, half the momentum comes from it. The range widens with the square root of the horizon. These are scenarios, not predictions.</p>
+      <p class="gt-note">Private estimate: the 35th percentile of providers' published reserved rates (6 months or longer) plus index and commitment evidence. The range runs from the lowest credible rate to the 25th percentile of on-demand prices.</p>
+      <h2 id="health-h">Collector health</h2>
+      <div class="gt-tw">
+        <table class="gt-t" data-source="health" data-row-key="id" aria-label="Collector health">
+          <thead><tr>
+            <th data-field="collector">Collector</th>
+            <th data-field="status">Status</th>
+            <th data-field="rows" class="gt-num">Rows</th>
+            <th data-field="seconds" class="gt-num">Seconds</th>
+            <th data-field="errors">Errors</th>
+          </tr></thead>
+          <tbody data-draw="health"></tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+</div>
+
+<script>
+  window.GT = (function () {
+    const PT = { on_demand: 'on-demand', spot: 'spot', capacity_block: 'capacity block', reserved: 'published reserved', private_estimate: 'estimated private' };
+    const usd = (v) => (v == null || isNaN(v)) ? '—' : '$' + d3.format(',.2f')(v);
+    const pct = (v) => (v == null || isNaN(v)) ? '—' : (v > 0 ? '+' : '') + d3.format('.1f')(v) + '%';
+    const p = () => {
+      const q = dash.params() || {};
+      return { gpu: q.gpu || 'B200', pt: q.pt || 'on_demand', geo: q.geo || '', region: q.region || '', cat: q.cat || '' };
+    };
+    const ok = (id) => { const d = dash.data(id); return d.status === 'ok' ? d : null; };
+    const tip = (el) => {
+      let t = el.querySelector('.gt-tip');
+      if (!t) { t = document.createElement('div'); t.className = 'gt-tip'; t.hidden = true; el.appendChild(t); }
+      return t;
+    };
+    const showTip = (el, t, x, y, lines) => {
+      t.replaceChildren(...lines.map((l, i) => { const s = document.createElement(i === 0 ? 'b' : 'div'); s.textContent = l; return s; }));
+      t.hidden = false;
+      const w = t.offsetWidth, W = el.clientWidth;
+      t.style.left = Math.max(0, Math.min(W - w, x + 12)) + 'px';
+      t.style.top = Math.max(0, y - 10) + 'px';
+    };
+    const status = (el, id) => {
+      const d = dash.data(id);
+      if (d.status === 'ok') return true;
+      const m = document.createElement('div');
+      m.className = 'gt-empty';
+      m.textContent = d.status === 'loading' ? 'Loading…' : d.status === 'error' ? 'Failed to load' : '—';
+      el.replaceChildren(m);
+      return false;
+    };
+    return { PT, usd, pct, p, ok, tip, showTip, status };
+  })();
+
+  const match = (r, q, opts = {}) => r.gpu === q.gpu && r.price_type === q.pt &&
+    (opts.noGeo || !q.geo || r.geo === q.geo) && (opts.noGeo || !q.region || r.region === q.region) &&
+    (!q.cat || r.category === q.cat || r.category === 'estimate');
+
+  dash.calc('selection', {
+    title: 'Offers matching the filters',
+    description: 'Price rows for the chosen GPU, price type, geography, region and provider type, cheapest first.',
+    inputs: ['prices'],
+    fn: (prices) => {
+      const q = GT.p();
+      return prices.filter((r) => match(r, q)).sort((a, b) => a.price_gpu_hr - b.price_gpu_hr);
+    }
+  });
+
+  dash.calc('by_provider', {
+    title: 'Cheapest offer per provider',
+    description: 'For the filters, each provider\'s lowest $/GPU-hr, the 20 cheapest providers.',
+    inputs: ['prices'],
+    fn: (prices) => {
+      const q = GT.p(), best = new Map();
+      for (const r of prices) {
+        if (!match(r, q)) continue;
+        const b = best.get(r.provider);
+        if (!b || r.price_gpu_hr < b.price_gpu_hr) best.set(r.provider, r);
+      }
+      return [...best.values()].sort((a, b) => a.price_gpu_hr - b.price_gpu_hr).slice(0, 20)
+        .map((r) => ({ provider: r.provider, price_gpu_hr: r.price_gpu_hr, category: r.category, sku: r.sku, region: r.region }));
+    }
+  });
+
+  dash.calc('summary', {
+    title: 'Headline figures',
+    description: 'Cheapest and median $/GPU-hr across providers, provider count, the private-rate estimate and the 7- and 30-day change in the median.',
+    inputs: ['prices', 'history', 'private'],
+    fn: (prices, history, priv) => {
+      const q = GT.p(), best = new Map();
+      let offers = 0;
+      for (const r of prices) {
+        if (!match(r, q)) continue;
+        offers++;
+        const b = best.get(r.provider);
+        if (!b || r.price_gpu_hr < b.price_gpu_hr) best.set(r.provider, r);
+      }
+      const vals = [...best.values()].sort((a, b) => a.price_gpu_hr - b.price_gpu_hr);
+      const med = vals.length ? d3.median(vals, (r) => r.price_gpu_hr) : null;
+      const geoKey = q.geo && !q.region && !q.cat ? q.geo : (!q.geo && !q.cat ? 'Global' : null);
+      const key = geoKey ? `${q.gpu}|${q.pt}|${geoKey}` : null;
+      const h = key ? history.filter((r) => r.key === key).sort((a, b) => d3.ascending(a.date, b.date)) : [];
+      const last = h.length ? h[h.length - 1] : null;
+      const back = (days) => {
+        if (!last) return null;
+        const cut = d3.utcDay.offset(new Date(last.date + 'T00:00:00Z'), -days).toISOString().slice(0, 10);
+        const prev = h.filter((r) => r.date <= cut).pop();
+        return prev && prev.median ? (last.median / prev.median - 1) * 100 : null;
+      };
+      const pv = priv.find((e) => e.gpu === q.gpu && e.geo === (q.geo || 'Global')) || priv.find((e) => e.gpu === q.gpu && e.geo === 'Global');
+      return [{
+        cheapest: vals.length ? vals[0].price_gpu_hr : null,
+        cheapest_provider: vals.length ? vals[0].provider : null,
+        cheapest_sku: vals.length ? vals[0].sku : null,
+        cheapest_region: vals.length ? vals[0].region : null,
+        median: med, providers: vals.length, offers,
+        private_base: pv ? pv.base : null, private_low: pv ? pv.low : null, private_high: pv ? pv.high : null,
+        private_geo: pv ? pv.geo : null,
+        change_7d: back(7), change_30d: back(30)
+      }];
+    }
+  });
+
+  dash.calc('forecast_sel', {
+    title: 'Forecast for the filters',
+    description: 'Monthly low, base and high projected median $/GPU-hr for the chosen GPU and price type, in the chosen geography or globally.',
+    inputs: ['forecast'],
+    fn: (forecast) => {
+      const q = GT.p();
+      let rows = forecast.filter((r) => r.key === `${q.gpu}|${q.pt}|${q.geo || 'Global'}`);
+      if (!rows.length) rows = forecast.filter((r) => r.key === `${q.gpu}|${q.pt}|Global`);
+      return rows.sort((a, b) => a.h - b.h);
+    }
+  });
+
+  dash.calc('history_sel', {
+    title: 'History for the filters',
+    description: 'Daily minimum and median $/GPU-hr across providers for the chosen GPU, price type and geography.',
+    inputs: ['history'],
+    fn: (history) => {
+      const q = GT.p();
+      return history.filter((r) => r.key === `${q.gpu}|${q.pt}|${q.geo || 'Global'}`).sort((a, b) => d3.ascending(a.date, b.date));
+    }
+  });
+
+  dash.calc('moves', {
+    title: 'Price moves by provider',
+    description: 'Each provider\'s cheapest $/GPU-hr now against the snapshot closest to 7 days earlier, largest moves first.',
+    inputs: ['history_providers'],
+    fn: (rows) => {
+      const q = GT.p();
+      const mine = rows.filter((r) => r.gpu === q.gpu && r.price_type === q.pt);
+      if (!mine.length) return [];
+      const dates = [...new Set(mine.map((r) => r.date))].sort();
+      const last = dates[dates.length - 1];
+      const cut = d3.utcDay.offset(new Date(last + 'T00:00:00Z'), -7).toISOString().slice(0, 10);
+      const prior = dates.filter((x) => x <= cut).pop();
+      if (!prior) return [];
+      const before = new Map(mine.filter((r) => r.date === prior).map((r) => [r.provider, r.min]));
+      return mine.filter((r) => r.date === last && before.has(r.provider))
+        .map((r) => ({ provider: r.provider, before: before.get(r.provider), now: r.min, since: prior,
+                       change_pct: (r.min / before.get(r.provider) - 1) * 100 }))
+        .filter((r) => Math.abs(r.change_pct) >= 0.5)
+        .sort((a, b) => Math.abs(b.change_pct) - Math.abs(a.change_pct)).slice(0, 25);
+    }
+  });
+</script>
+
+<script>
+  // Controls: listen, set params, reflect state (class / aria / value only).
+  document.querySelectorAll('#gpu-pick button').forEach((b) => {
+    b.addEventListener('click', () => dash.setParams({ gpu: b.getAttribute('data-gpu'), region: null }));
+  });
+  document.querySelectorAll('#pt-pick').forEach((s) => s.addEventListener('change', () => dash.setParams({ pt: s.value })));
+  document.querySelectorAll('#cat-pick').forEach((s) => s.addEventListener('change', () => dash.setParams({ cat: s.value || null })));
+  document.querySelectorAll('#reset').forEach((b) => b.addEventListener('click', () => dash.resetParams()));
+  dash.onData(() => {
+    const q = GT.p();
+    document.querySelectorAll('#gpu-pick button').forEach((b) => {
+      const on = b.getAttribute('data-gpu') === q.gpu;
+      b.classList.toggle('gt-on', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    document.querySelectorAll('#pt-pick').forEach((s) => { if (document.activeElement !== s) s.value = q.pt; });
+    document.querySelectorAll('#cat-pick').forEach((s) => { if (document.activeElement !== s) s.value = q.cat; });
+  });
+</script>
+
+<script>
+  const GEO_ORDER = ['US East', 'US West', 'US Central', 'US (unspecified)', 'Canada', 'Latin America', 'UK', 'EU West', 'EU Central', 'EU North', 'EU South', 'Middle East', 'India', 'APAC', 'Africa', 'Global'];
+
+  dash.draw('geo', (sel) => {
+    const d = dash.data('prices'), q = GT.p();
+    const rows = d.status === 'ok' ? d.data.filter((r) => r.gpu === q.gpu && r.price_type === q.pt) : [];
+    const geos = [...new Set(rows.map((r) => r.geo))].sort((a, b) => GEO_ORDER.indexOf(a) - GEO_ORDER.indexOf(b));
+    if (q.geo && !geos.includes(q.geo)) geos.push(q.geo);
+    sel.replaceChildren(new Option('All geographies', ''), ...geos.map((g) => new Option(g, g)));
+    sel.value = q.geo;
+    sel.onchange = () => dash.setParams({ geo: sel.value || null, region: null });
+  });
+
+  dash.draw('region', (sel) => {
+    const d = dash.data('prices'), q = GT.p();
+    const rows = d.status === 'ok' ? d.data.filter((r) => r.gpu === q.gpu && r.price_type === q.pt && (!q.geo || r.geo === q.geo)) : [];
+    const regs = [...new Set(rows.map((r) => r.region))].sort(d3.ascending);
+    if (q.region && !regs.includes(q.region)) regs.push(q.region);
+    sel.replaceChildren(new Option(q.geo ? 'All regions in ' + q.geo : 'All regions', ''), ...regs.map((g) => new Option(g, g)));
+    sel.value = q.region;
+    sel.onchange = () => dash.setParams({ region: sel.value || null });
+  });
+
+  const S = () => GT.ok('summary') ? GT.ok('summary').data[0] : null;
+  const put = (el, txt) => { el.textContent = txt; };
+
+  dash.draw('t-what', (el) => { const q = GT.p(); put(el, `${q.gpu} ${GT.PT[q.pt]}${q.geo ? ' (' + (q.region || q.geo) + ')' : ''}`); });
+  dash.draw('t-cheap', (el) => { const s = S(); put(el, s ? GT.usd(s.cheapest) : '—'); });
+  dash.draw('t-prov', (el) => { const s = S(); put(el, s && s.cheapest_provider ? s.cheapest_provider : '—'); });
+  dash.draw('t-n', (el) => { const s = S(); put(el, s ? String(s.providers) : '—'); });
+  dash.draw('t-med', (el) => { const s = S(); put(el, s ? GT.usd(s.median) : '—'); });
+  dash.draw('k-cheap', (el) => { const s = S(); put(el, s ? GT.usd(s.cheapest) : '—'); });
+  dash.draw('k-cheap-who', (el) => { const s = S(); put(el, s && s.cheapest_provider ? `${s.cheapest_provider} · ${s.cheapest_sku} · ${s.cheapest_region}` : 'No offers for these filters'); });
+  dash.draw('k-med', (el) => { const s = S(); put(el, s ? GT.usd(s.median) : '—'); });
+  dash.draw('k-n', (el) => { const s = S(); put(el, s ? String(s.providers) : '—'); });
+  dash.draw('k-offers', (el) => { const s = S(); put(el, s ? `${s.offers} offers after de-duplication` : '—'); });
+  dash.draw('k-priv', (el) => { const s = S(); put(el, s ? GT.usd(s.private_base) : '—'); });
+  dash.draw('k-priv-range', (el) => { const s = S(); put(el, s && s.private_base != null ? `Range ${GT.usd(s.private_low)} to ${GT.usd(s.private_high)} · ${s.private_geo} · 12-month+ commitment` : 'Not enough data'); });
+  dash.draw('k-chg', (el) => {
+    const s = S();
+    el.classList.remove('gt-good', 'gt-badc');
+    if (!s || s.change_7d == null) { put(el, '—'); return; }
+    put(el, GT.pct(s.change_7d));
+    el.classList.add(s.change_7d <= 0 ? 'gt-good' : 'gt-badc');
+  });
+  dash.draw('k-chg30', (el) => {
+    const s = S();
+    put(el, !s ? '—' : s.change_7d == null ? 'Needs 7 days of history (collected daily). Lower is better for buyers.' : `30 days: ${GT.pct(s.change_30d)} · lower is better for buyers`);
+  });
+  dash.draw('fresh', (el) => {
+    const d = dash.data('prices');
+    const m = d.status === 'ok' && Array.isArray(d.meta) ? d.meta.find((x) => x.label === 'Collected') : null;
+    put(el, m ? `Public list prices in USD per GPU-hour, collected ${d3.utcFormat('%b %-d, %Y %H:%M UTC')(new Date(m.value))}. Refreshed daily.` : 'Public list prices in USD per GPU-hour. Refreshed daily.');
+  });
+  dash.draw('offers-note', (el) => {
+    const d = GT.ok('selection');
+    put(el, d ? `${d.data.length} offers, cheapest first. Aggregator rows link to the provider's page; check the price there before quoting it.` : '—');
+  });
+  dash.draw('fc-note', (el) => {
+    const d = GT.ok('forecast_sel'), q = GT.p();
+    if (!d) { put(el, '—'); return; }
+    if (!d.data.length) { put(el, `No forecast for ${GT.PT[q.pt]} prices. Choose on-demand, capacity block, reserved or estimated private.`); return; }
+    const g = d.data[0].geo, last = d.data[d.data.length - 1];
+    put(el, `${q.gpu} ${GT.PT[q.pt]}, ${g === 'Global' ? 'all geographies' : g}. Base case ${GT.usd(last.base)} by ${d3.utcFormat('%b %Y')(new Date(last.month + '-01T00:00:00Z'))}, range ${GT.usd(last.low)} to ${GT.usd(last.high)}.`);
+  });
+  dash.draw('sw0', (el) => { el.style.background = dash.colors[0]; });
+
+  // Horizontal bars: cheapest per provider.
+  dash.draw('bars', (el) => {
+    if (!GT.status(el, 'by_provider')) return;
+    const rows = dash.data('by_provider').data;
+    if (!rows.length) { const m = document.createElement('div'); m.className = 'gt-empty'; m.textContent = 'No offers for these filters.'; el.replaceChildren(m); return; }
+    const W = Math.max(280, el.clientWidth), bh = 22, top = 4, bottom = 24;
+    const svg = d3.create('svg').attr('role', 'img').attr('aria-label', 'Cheapest price per GPU-hour by provider');
+    const probe = svg.append('g');
+    el.replaceChildren(svg.node());
+    const labW = Math.min(W * 0.42, d3.max(rows, (r) => { const t = probe.append('text').text(r.provider); const w = t.node().getComputedTextLength(); t.remove(); return w; }) + 10);
+    const H = top + rows.length * bh + bottom;
+    svg.attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+    const x = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.price_gpu_hr) * 1.12]).nice().range([labW, W - 8]);
+    const y = d3.scaleBand().domain(rows.map((r) => r.provider)).range([top, top + rows.length * bh]).padding(0.25);
+    svg.append('g').attr('transform', `translate(0,${top + rows.length * bh})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor((W - labW) / 70))).tickFormat((v) => '$' + v).tickSize(-(rows.length * bh)))
+      .call((g) => g.select('.domain').remove());
+    svg.append('g').selectAll('text').data(rows).join('text').attr('x', labW - 8).attr('y', (r) => y(r.provider) + y.bandwidth() / 2).attr('dy', '0.35em').attr('text-anchor', 'end').text((r) => r.provider);
+    const t = GT.tip(el);
+    svg.append('g').selectAll('rect').data(rows).join('rect')
+      .attr('x', labW).attr('y', (r) => y(r.provider)).attr('height', y.bandwidth()).attr('width', (r) => Math.max(1, x(r.price_gpu_hr) - labW))
+      .attr('rx', 2).style('fill', (r, i) => i === 0 ? dash.colors[0] : dash.colors[1] || dash.colors[0]).style('opacity', (r, i) => i === 0 ? 1 : 0.75)
+      .on('pointermove', (ev, r) => { const [mx, my] = d3.pointer(ev, el); GT.showTip(el, t, mx, my, [GT.usd(r.price_gpu_hr) + ' / GPU-hr', r.provider + ' (' + r.category + ')', r.sku, r.region]); })
+      .on('pointerleave', () => { t.hidden = true; });
+    svg.append('g').selectAll('text').data(rows).join('text').attr('x', (r) => x(r.price_gpu_hr) + 4).attr('y', (r) => y(r.provider) + y.bandwidth() / 2).attr('dy', '0.35em').text((r) => GT.usd(r.price_gpu_hr));
+    el.appendChild(t);
+  });
+
+  // Forecast fan.
+  dash.draw('fan', (el) => {
+    if (!GT.status(el, 'forecast_sel')) return;
+    const rows = dash.data('forecast_sel').data;
+    if (!rows.length) { const m = document.createElement('div'); m.className = 'gt-empty'; m.textContent = 'No forecast for this price type.'; el.replaceChildren(m); return; }
+    const W = Math.max(280, el.clientWidth), H = 260, m = { t: 10, r: 14, b: 26, l: 48 };
+    const pts = rows.map((r) => ({ ...r, dt: new Date(r.month + '-01T00:00:00Z') }));
+    const x = d3.scaleUtc().domain(d3.extent(pts, (r) => r.dt)).range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(pts, (r) => r.high) * 1.1]).nice().range([H - m.b, m.t]);
+    const svg = d3.create('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).attr('role', 'img').attr('aria-label', 'Projected median price per GPU-hour with low and high range');
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 90))).tickFormat(d3.utcFormat('%b %y')));
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat((v) => '$' + v).tickSize(-(W - m.l - m.r))).call((g) => g.select('.domain').remove());
+    svg.append('path').datum(pts).attr('d', d3.area().x((r) => x(r.dt)).y0((r) => y(r.low)).y1((r) => y(r.high))).style('fill', 'var(--cds-chart-muted)').style('opacity', 0.45);
+    svg.append('path').datum(pts).attr('d', d3.line().x((r) => x(r.dt)).y((r) => y(r.base))).style('fill', 'none').style('stroke', dash.colors[0]).style('stroke-width', 2);
+    svg.append('circle').attr('cx', x(pts[0].dt)).attr('cy', y(pts[0].base)).attr('r', 4).style('fill', dash.colors[0]);
+    const end = pts[pts.length - 1];
+    svg.append('circle').attr('cx', x(end.dt)).attr('cy', y(end.base)).attr('r', 3).style('fill', dash.colors[0]);
+    const t = GT.tip(el);
+    const guide = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)').style('opacity', 0);
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).style('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const [mx, my] = d3.pointer(ev, el);
+        const i = d3.bisectCenter(pts.map((r) => +r.dt), +x.invert(mx));
+        const r = pts[Math.max(0, Math.min(pts.length - 1, i))];
+        guide.attr('x1', x(r.dt)).attr('x2', x(r.dt)).style('opacity', 1);
+        GT.showTip(el, t, mx, my, [d3.utcFormat('%b %Y')(r.dt) + (r.h === 0 ? ' (now)' : ` (+${r.h} mo)`), 'Base ' + GT.usd(r.base), 'Range ' + GT.usd(r.low) + ' to ' + GT.usd(r.high)]);
+      })
+      .on('pointerleave', () => { t.hidden = true; guide.style('opacity', 0); });
+    el.replaceChildren(svg.node(), t);
+  });
+
+  // History lines.
+  dash.draw('hist', (el) => {
+    if (!GT.status(el, 'history_sel')) return;
+    const rows = dash.data('history_sel').data;
+    if (rows.length < 2) {
+      const m = document.createElement('div'); m.className = 'gt-empty';
+      m.textContent = rows.length ? `Tracking started ${d3.utcFormat('%b %-d, %Y')(new Date(rows[0].date + 'T00:00:00Z'))}: min ${GT.usd(rows[0].min)}, median ${GT.usd(rows[0].median)} across ${rows[0].n} providers. The line appears after the second daily run.` : 'No history for these filters yet.';
+      el.replaceChildren(m); return;
+    }
+    const W = Math.max(280, el.clientWidth), H = 240, m = { t: 10, r: 14, b: 26, l: 48 };
+    const pts = rows.map((r) => ({ ...r, dt: new Date(r.date + 'T00:00:00Z') }));
+    const x = d3.scaleUtc().domain(d3.extent(pts, (r) => r.dt)).range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(pts, (r) => r.median) * 1.15]).nice().range([H - m.b, m.t]);
+    const svg = d3.create('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).attr('role', 'img').attr('aria-label', 'Daily minimum and median price per GPU-hour');
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 90))).tickFormat(d3.utcFormat('%b %-d')));
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat((v) => '$' + v).tickSize(-(W - m.l - m.r))).call((g) => g.select('.domain').remove());
+    [['median', dash.colors[0]], ['min', dash.colors[1] || dash.colors[0]]].forEach(([k, c]) => {
+      svg.append('path').datum(pts).attr('d', d3.line().x((r) => x(r.dt)).y((r) => y(r[k]))).style('fill', 'none').style('stroke', c).style('stroke-width', 2);
+      const e = pts[pts.length - 1];
+      svg.append('circle').attr('cx', x(e.dt)).attr('cy', y(e[k])).attr('r', 3.5).style('fill', c);
+      svg.append('text').attr('x', x(e.dt) - 4).attr('y', y(e[k]) - 8).attr('text-anchor', 'end').text((k === 'min' ? 'Min ' : 'Median ') + GT.usd(e[k]));
+    });
+    const t = GT.tip(el);
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).style('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const [mx, my] = d3.pointer(ev, el);
+        const i = d3.bisectCenter(pts.map((r) => +r.dt), +x.invert(mx));
+        const r = pts[Math.max(0, Math.min(pts.length - 1, i))];
+        GT.showTip(el, t, mx, my, [d3.utcFormat('%b %-d, %Y')(r.dt), 'Median ' + GT.usd(r.median), 'Min ' + GT.usd(r.min), r.n + ' providers']);
+      })
+      .on('pointerleave', () => { t.hidden = true; });
+    el.replaceChildren(svg.node(), t);
+  });
+
+  const cell = (tr, text, cls) => { const td = document.createElement('td'); if (cls) td.className = cls; td.textContent = text == null ? '—' : text; tr.appendChild(td); return td; };
+  const pill = (tr, text) => { const td = document.createElement('td'); const s = document.createElement('span'); s.className = 'gt-pill gt-' + String(text).toLowerCase(); s.textContent = text; td.appendChild(s); tr.appendChild(td); };
+  const link = (tr, text, url) => {
+    const td = document.createElement('td');
+    if (url && /^https:\/\//.test(url)) { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = text; td.appendChild(a); }
+    else td.textContent = text || '—';
+    tr.appendChild(td);
+  };
+
+  dash.draw('offers', (tb) => {
+    const d = GT.ok('selection');
+    if (!d) { tb.replaceChildren(); return; }
+    tb.replaceChildren(...d.data.map((r) => {
+      const tr = document.createElement('tr'); tr.setAttribute('data-key', r.id);
+      cell(tr, r.provider); cell(tr, r.category); cell(tr, r.variant); cell(tr, r.sku); cell(tr, r.gpus, 'gt-num');
+      cell(tr, GT.usd(r.price_gpu_hr), 'gt-num'); cell(tr, r.price_instance_hr == null ? '—' : GT.usd(r.price_instance_hr), 'gt-num');
+      cell(tr, r.term_months == null ? '—' : r.term_months, 'gt-num'); cell(tr, r.region); cell(tr, r.geo); cell(tr, r.availability || '—');
+      pill(tr, r.confidence); link(tr, r.source, r.source_url);
+      return tr;
+    }));
+  });
+
+  dash.draw('moves', (tb) => {
+    const d = GT.ok('moves');
+    if (!d) { tb.replaceChildren(); return; }
+    if (!d.data.length) {
+      const tr = document.createElement('tr'); const td = cell(tr, 'No moves yet. This fills in once the tracker has a snapshot from 7 or more days ago.'); td.colSpan = 5; td.className = 'gt-empty';
+      tb.replaceChildren(tr); return;
+    }
+    tb.replaceChildren(...d.data.map((r) => {
+      const tr = document.createElement('tr'); tr.setAttribute('data-key', r.provider);
+      cell(tr, r.provider); cell(tr, GT.usd(r.before), 'gt-num'); cell(tr, GT.usd(r.now), 'gt-num');
+      const td = cell(tr, GT.pct(r.change_pct), 'gt-num'); td.classList.add(r.change_pct <= 0 ? 'gt-good' : 'gt-badc');
+      cell(tr, r.since);
+      return tr;
+    }));
+  });
+
+  dash.draw('private', (tb) => {
+    const d = GT.ok('private'), q = GT.p();
+    if (!d) { tb.replaceChildren(); return; }
+    const rows = d.data.filter((r) => r.gpu === q.gpu).sort((a, b) => (a.geo === 'Global' ? -1 : b.geo === 'Global' ? 1 : d3.ascending(a.geo, b.geo)));
+    tb.replaceChildren(...rows.map((r) => {
+      const tr = document.createElement('tr'); tr.setAttribute('data-key', r.id);
+      cell(tr, r.geo === 'Global' ? 'All geographies' : r.geo); cell(tr, GT.usd(r.low), 'gt-num'); cell(tr, GT.usd(r.base), 'gt-num'); cell(tr, GT.usd(r.high), 'gt-num');
+      cell(tr, r.n_reserved, 'gt-num'); pill(tr, r.confidence); cell(tr, r.method);
+      return tr;
+    }));
+  });
+
+  dash.draw('evidence', (tb) => {
+    const d = GT.ok('evidence'), q = GT.p();
+    if (!d) { tb.replaceChildren(); return; }
+    const rows = d.data.filter((r) => r.gpu === q.gpu || r.gpu === 'ALL').sort((a, b) => d3.descending(a.date, b.date));
+    tb.replaceChildren(...rows.map((r) => {
+      const tr = document.createElement('tr'); tr.setAttribute('data-key', r.id);
+      cell(tr, r.date); cell(tr, r.kind); cell(tr, r.value_gpu_hr == null ? '—' : GT.usd(r.value_gpu_hr), 'gt-num'); cell(tr, r.claim);
+      link(tr, r.source_name, r.source_url); pill(tr, r.confidence);
+      return tr;
+    }));
+  });
+
+  dash.draw('drivers', (ul) => {
+    const d = GT.ok('drivers');
+    if (!d) { ul.replaceChildren(); return; }
+    const label = { up: 'Pushes prices up: ', down: 'Pushes prices down: ', risk: 'Uncertainty: ', assumption: 'Assumption, ' };
+    ul.replaceChildren(...d.data.map((r) => { const li = document.createElement('li'); const b = document.createElement('b'); b.textContent = label[r.direction] || ''; li.append(b, document.createTextNode(r.text)); return li; }));
+  });
+
+  dash.draw('health', (tb) => {
+    const d = GT.ok('health');
+    if (!d) { tb.replaceChildren(); return; }
+    tb.replaceChildren(...d.data.map((r) => {
+      const tr = document.createElement('tr'); tr.setAttribute('data-key', r.id);
+      cell(tr, r.collector); pill(tr, r.status); cell(tr, r.rows, 'gt-num'); cell(tr, r.seconds, 'gt-num'); cell(tr, r.errors || '—');
+      return tr;
+    }));
+  });
+</script>
